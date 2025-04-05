@@ -1,42 +1,24 @@
-console.clear();
-console.error("ATTENTION: GAME STARTED!");
-console.warn("ATTENTION: GAME STARTED!");
-console.log("ATTENTION: GAME STARTED!");
-
-
-// ------------
-// | classes: |
-// ------------
+/*
+// classes:
 class Empty { }
 
-class LivingCreature {
-    constructor(color, energy){
-        this.stepcount = frameCount + 1;  // stepcount
-        this.color = color;               // color
-        this.energy = energy;             // energy
-        this.row;
-        this.col;
-    }
-}
-
-/*
 class Grass {
-    constructor(){
+    constructor() {
         this.color = "green";
-        this.stepCount = frameCount + 1;
+        this.stepCount = globalStep + 1;
         this.energy = 0;
         this.row;
         this.col;
     }
 
-    step(){
+    step() {
         this.energy++;
         if (this.energy >= 6) {
             this.multiply();
         }
     }
 
-    multiply(){
+    multiply() {
         let elems = findNeighbours(this.row, this.col, 1, Empty)
         if (elems.length > 0) {
             let free = random(elems);
@@ -47,45 +29,17 @@ class Grass {
         }
     }
 }
-*/
-
-
-class Grass extends LivingCreature{
-    constructor(){
-        super("green", 0);
-    }
-
-    step(){
-        console.log(this.energy)
-        this.energy++;
-        if (this.energy >= 6) {
-            this.multiply();
-        }
-    }
-
-    multiply(){
-        let elems = findNeighbours(this.row, this.col, 1, Empty)
-        if (elems.length > 0) {
-            let free = random(elems);
-            let row = free[0];
-            let col = free[1];
-            matrix[row][col] = new Grass();
-            this.energy = 0;
-        }
-    }
-}
-
 
 class Grazer {
-    constructor(){
+    constructor() {
         this.color = "yellow";
-        this.stepCount = frameCount + 1;
+        this.stepCount = globalStep + 1;
         this.energy = 5;
         this.row;
         this.col;
     }
 
-    eat(){
+    eat() {
         let food = findNeighbours(this.row, this.col, 1, Grass)
         if (food.length > 0) {
             let grassField = random(food);
@@ -101,9 +55,7 @@ class Grazer {
         }
     }
 
-
-    // multiply:
-    mul(){
+    mul() {
         let spawnElems = findNeighbours(this.row, this.col, 1, Empty)
         if (spawnElems.length > 0) {
             let spawnField = random(spawnElems);
@@ -116,7 +68,7 @@ class Grazer {
         }
     }
 
-    step(){
+    step() {
         this.eat()
         if (this.energy >= 10) {
             this.mul();
@@ -126,18 +78,16 @@ class Grazer {
     }
 };
 
-
-
 class Tyrant {
-    constructor(){
+    constructor() {
         this.color = "red";
-        this.stepCount = frameCount + 1;
+        this.stepCount = globalStep + 1;
         this.energy = 50;
         this.row;
         this.col;
     }
 
-    eat(){
+    eat() {
         let food = findNeighbours(this.row, this.col, 1, Grazer)
         if (food.length > 0) {
             let grazerField = random(food);
@@ -148,8 +98,7 @@ class Tyrant {
         }
     }
 
-    // mulitply:
-    mul(){
+    mul() {
         let spawnElems = findNeighbours(this.row, this.col, 1, Empty)
         if (spawnElems.length > 0) {
             let emptyField = random(spawnElems);
@@ -158,7 +107,7 @@ class Tyrant {
         }
     }
 
-    step(){
+    step() {
         this.eat()
         if (this.energy >= 100) {
             this.mul();
@@ -171,13 +120,13 @@ class Tyrant {
 class NoIdea{
     constructor(){
         this.color = "#4287f5";
-        this.stepCount = frameCount + 1;
+        this.stepCount = globalStep + 1;
         this.energy = 1
         this.row;
         this.col;
     }
 
-    eat(){
+    eat() {
         let i = 0;
         let food = findNeighbours(this.row, this.col, 3, Grass);
         if (food.length >= 13) {
@@ -204,16 +153,15 @@ class NoIdea{
             matrix[this.row][this.col] = new Grazer();
         }
     }
-};
+}
+*/
 
-
-// ----------------------------------------------------------
 // other code:
 let matrix = [];
 let previousMatrix = [];
 let size = 50;
 let blockSize = 16;
-let frameCount = 0;
+let globalStep = 0;
 
 // randomly fill the matrix with creatures
 let creatureTypes = [Grazer, Tyrant, Grass, Grass, Grass, Grass, Grass, Grass, Grass, Grass, Grass, Grass, Grass, Grass, Grass, Grass, Grass, Grass, Grass, Grass, Grass, Grass, Grass, Grass, Grass, Grass, Grass, Grass, Grass, Grass, Grass, Grass, Grass, Grass, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty, NoIdea]
@@ -243,10 +191,8 @@ function drawCreature(row, col, obj) {
     rect(blockSize * col, blockSize * row, blockSize, blockSize);
 }
 
-
-// DO NOT TOUCH IT!!!! (it is working!)
 // find all neighbours of a certain creature type in a certain radius
-function findNeighbours(row, col, n, cls, usePrevious = false) {             // "cls" = class
+function findNeighbours(row, col, n, cls, usePrevious = false) {
     let mat = usePrevious ? previousMatrix : matrix;
     let fields = []
     for (let nCol = col - n; nCol <= col + n; nCol++) {
@@ -279,7 +225,7 @@ function draw() {
 
             // this prevents newly created objects from being updated in the same step
             // you can also create objects that get "activated" only after a certain number of steps after creation
-            if (obj.stepCount === frameCount) {
+            if (obj.stepCount === globalStep) {
                 obj.row = row;
                 obj.col = col;
                 obj.step();
@@ -287,4 +233,5 @@ function draw() {
             }
         }
     }
+    globalStep++;
 }
